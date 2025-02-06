@@ -7,7 +7,6 @@ import Link from "next/link";
 
 export default function Profile() {
   const { user } = useContext(MyContext);
-  console.log(user);
 
   if (user) {
     return (
@@ -43,7 +42,7 @@ export default function Profile() {
             <div className="flex-1">
               <h1 className="text-4xl font-bold">{user.name}</h1>
               <p className="text-gray-400 text-lg mt-2">
-                Subscribers: {user.subscribers}
+                Subscribers: {user.subscribers.length}
               </p>
               <p className="text-gray-500 text-sm mt-2">{user?.email}</p>
               {/* Bio Section */}

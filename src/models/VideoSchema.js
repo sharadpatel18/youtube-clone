@@ -24,14 +24,24 @@ const VideoSchema = new mongoose.Schema(
     username: { type: String, required: true },
     profilePicture: { type: String, required: true },
     views: {
-      type: Number,
+      type: [
+        {
+          userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+          username: { type: String, required: true },
+        },
+      ],
       require: true,
-      default: 0,
+      default: [],
     },
     likes: {
-      type: Number,
+      type: [
+        {
+          userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+          username: { type: String, required: true },
+        },
+      ],
       require: true,
-      default: 0,
+      default: [],
     },
     dislikes: {
       type: Number,
@@ -44,7 +54,12 @@ const VideoSchema = new mongoose.Schema(
         comment: { type: String, required: true },
       },
     ],
+    thumbnail: {
+      type: String,
+      default: "",
+    },
   },
+  
   { timestamps: true }
 );
 

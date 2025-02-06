@@ -25,12 +25,23 @@ const UserSchema = new mongoose.Schema(
       default: "",
     },
     subscribers: {
-      type: Number,
-      default: 0,
+      type: [
+        {
+          userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+          username: { type: String, required: true },
+        },
+      ],
+      require: true,
+      default: [],
     },
     subscribedChannels: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "User",
+      type: [
+        {
+          userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+          username: { type: String, required: true },
+        },
+      ],
+      require: true,
       default: [],
     },
   },

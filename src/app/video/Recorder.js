@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 
 const Recorder = () => {
   const router = useRouter();
-  const { user , setVideoLink } = useContext(MyContext);
+  const { user , setVideoLink} = useContext(MyContext);
   const [isRecording, setIsRecording] = useState(false);
   const [isScreenRecording, setIsScreenRecording] = useState(false);
   const [recordedBlob, setRecordedBlob] = useState(null);

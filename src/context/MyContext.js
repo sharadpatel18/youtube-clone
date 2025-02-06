@@ -16,6 +16,8 @@ export const MyProvider = (props) => {
             const user = jwt.decode(token)
             setUser(user)
         }
+
+        
     },[istoken])
 
     return (

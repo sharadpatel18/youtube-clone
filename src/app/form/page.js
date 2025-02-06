@@ -2,14 +2,26 @@
 
 import { MyContext } from "@/context/MyContext";
 import { useContext, useState } from "react";
+import {Upload} from 'lucide-react'
 import Axios from "axios";
 
 export default function Form() {
   const { user ,videoLink} = useContext(MyContext);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  console.log(user);
-  
+  const [thumbnail, setThumbnail] = useState(null);
+
+  const handleFileUpload = (e) => {
+    let render = new FileReader();
+    render.readAsDataURL(e.target.files[0]);
+    render.onload = () => {
+      setThumbnail(render.result);
+    };
+    render.onerror = (error) => {
+      console.log("Error: ", error);
+    };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
           const response = await Axios.post(`/api/video-backend/saveVideo`, {
@@ -19,11 +31,11 @@ export default function Form() {
           description: description,
           userId: user.id,
           username: user.name,
-          profilePicture: user.profilePicture
+          profilePicture: user.profilePicture,
+          thumbnail: thumbnail
         });
 
         console.log(response.data);
-        //setMessage(response.data.message);
     console.log({ title, description });
   };
   console.log(videoLink);
@@ -44,6 +56,24 @@ export default function Form() {
               className="w-full h-full object-cover"
             />
           </div>
+          <div className="flex items-center my-9 space-x-2">
+            <label className="flex items-center justify-center w-full bg-[#282828] p-2 rounded cursor-pointer">
+              <Upload className="w-5 h-5 text-gray-400" />
+              <span className="ml-2 text-gray-400">thumbnail</span>
+              <input
+                type="file"
+                onChange={(e) => handleFileUpload(e, "profilePicture")}
+                className="hidden"
+              />
+            </label>
+          </div>
+          {thumbnail && (
+            <img
+              src={thumbnail}
+              alt="Profile Preview"
+              className="mt-2 h-16 w-16 object-cover "
+            />
+          )}
           <label htmlFor="title" className="text-lg font-semibold">
             Title
           </label>
@@ -85,6 +115,6 @@ export default function Form() {
     </div>
   );
  }else{
-  <h1>Loading...`</h1>
+  <h1>Loading...</h1>
  }
 }
