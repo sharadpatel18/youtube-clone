@@ -13,7 +13,8 @@ export async function POST(req) {
     // Your signup logic here
     console.log("Signup request completed");
     const existedUser = await User.findOne({ email });
-
+    console.log("existedUser", existedUser);
+    
     if (!existedUser) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
@@ -39,7 +40,8 @@ export async function POST(req) {
       process.env.SECRET_KEY,
       { expiresIn: "7d" }
     );
-
+    console.log("TOken", token);
+    
     return NextResponse.json({ message: "Login successful!", token });
   } catch (error) {
     console.log(error);
