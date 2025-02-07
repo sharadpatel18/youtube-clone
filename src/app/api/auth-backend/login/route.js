@@ -4,25 +4,22 @@ import jwt from "jsonwebtoken";
 import User from "@/models/User";
 import { DbConntection } from "@/utils/db";
 
-DbConntection();
-
 export async function POST(req) {
   try {
+    // Ensure database is connected inside the function
+    await DbConntection();
+
     const { email, password } = await req.json();
     console.log("Signup request received");
-    // Your signup logic here
-    console.log("Signup request completed");
+
     const existedUser = await User.findOne({ email });
     console.log("existedUser", existedUser);
-    
+
     if (!existedUser) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    const comparedPassword = await bcrypt.compare(
-      password,
-      existedUser.password
-    );
+    const comparedPassword = await bcrypt.compare(password, existedUser.password);
 
     if (!comparedPassword) {
       return NextResponse.json({ message: "Wrong password" }, { status: 401 });
@@ -40,8 +37,8 @@ export async function POST(req) {
       process.env.SECRET_KEY,
       { expiresIn: "7d" }
     );
-    console.log("TOken", token);
-    
+
+    console.log("Token", token);
     return NextResponse.json({ message: "Login successful!", token });
   } catch (error) {
     console.log(error);
