@@ -9,7 +9,9 @@ DbConntection();
 export async function POST(req) {
   try {
     const { email, password } = await req.json();
-
+    console.log("Signup request received");
+    // Your signup logic here
+    console.log("Signup request completed");
     const existedUser = await User.findOne({ email });
 
     if (!existedUser) {
