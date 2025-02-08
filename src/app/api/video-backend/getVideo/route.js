@@ -5,8 +5,9 @@ import { DbConntection } from "@/utils/db";
 DbConntection();
 export async function GET(req) {
     try {
-        const videos = await Video.find({});
+        console.log("hitted");
         
+        const videos = await Video.find({});
         return NextResponse.json({ videos }, { status: 200 });
     } catch (error) {
         console.error("Error fetching videos:", error);

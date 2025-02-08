@@ -1,3 +1,5 @@
+"use client";
+
 import React, {
   useState,
   useEffect,
@@ -11,7 +13,8 @@ import { MyContext } from "@/context/MyContext";
 import axios from "axios";
 import CommentsSection from "./commentSection";
 
-const VideoPlayer = ({ videoUrl }) => {
+const VideoPlayer = ({ videoUrl, playlist, currentVideoIndex , onPrevious , onNext }) => {
+  
   const videoRef = useRef(null);
   const { user } = useContext(MyContext);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -26,6 +29,10 @@ const VideoPlayer = ({ videoUrl }) => {
   const [subscribed, setSubscribed] = useState(false);
   const [subscribedUsers, setSubscribedUsers] = useState([]);
 
+  // Current video being played (either from videoUrl or playlist)
+  const currentVideo = playlist ? playlist[currentVideoIndex] : videoUrl;
+
+  // Handle subscribe
   const handleSubscribe = async () => {
     console.log(user);
 
@@ -33,7 +40,7 @@ const VideoPlayer = ({ videoUrl }) => {
       // Send a request to the backend to subscribe
       const res = await axios.post("/api/video-backend/subscribeHandle", {
         subscriberId: user.id,
-        channelId: videoUrl.userId,
+        channelId: currentVideo.userId,
       });
 
       if (res.status === 200) {
@@ -42,7 +49,7 @@ const VideoPlayer = ({ videoUrl }) => {
 
         // Fetch the updated subscriber count from the backend
         const updatedChannel = await axios.get(
-          `/api/video-backend/getSubscriber/${videoUrl.userId}`
+          `/api/video-backend/getSubscriber/${currentVideo.userId}`
         );
 
         if (updatedChannel.data) {
@@ -55,11 +62,12 @@ const VideoPlayer = ({ videoUrl }) => {
     }
   };
 
+  // Fetch subscriber data
   useEffect(() => {
     const saveData = async () => {
       try {
         const res = await axios.get(
-          `/api/video-backend/getSubscriber/${videoUrl.userId}`
+          `/api/video-backend/getSubscriber/${currentVideo.userId}`
         );
 
         if (res.data) {
@@ -67,7 +75,7 @@ const VideoPlayer = ({ videoUrl }) => {
           const data = res.data;
           const findIndex = data.user.subscribers.findIndex((item) => {
             return item.userId === user.id;
-          })
+          });
 
           if (findIndex >= 0) {
             setSubscribed(true);
@@ -79,45 +87,47 @@ const VideoPlayer = ({ videoUrl }) => {
       }
     };
     saveData();
-  }, [subscribed]);
-  
+  }, [subscribed, currentVideo, user]);
+
+  // Handle views
   useEffect(() => {
-    const index = videoUrl.views.findIndex((item) => {
+    const index = currentVideo?.views?.findIndex((item) => {
       return item.userId === user.id;
     });
     console.log(user);
 
     if (index === -1) {
-      videoUrl.views.push({
+      currentVideo.views.push({
         userId: user.id,
         username: user.name,
       });
     }
 
-    const findLikeIndex = videoUrl.likes.findIndex((item) => {
+    const findLikeIndex = currentVideo?.likes?.findIndex((item) => {
       return item.userId === user.id;
     });
 
     if (findLikeIndex >= 0) {
       setLiked(true);
     }
-  }, []);
+  }, [currentVideo, user]);
 
+  // Save views to backend
   useEffect(() => {
     const saveData = async () => {
       try {
         const res = await axios.patch(
-          `/api/video-backend/viewHandle/${videoUrl._id}`,
-          { views: videoUrl.views }
+          `/api/video-backend/viewHandle/${currentVideo._id}`,
+          { views: currentVideo.views }
         );
-
       } catch (error) {
         console.log(error);
       }
     };
     saveData();
-  }, [videoUrl.views]);
+  }, [currentVideo]);
 
+  // Handle video metadata
   const handleLoadedMetadata = useCallback(() => {
     const video = videoRef.current;
 
@@ -136,6 +146,7 @@ const VideoPlayer = ({ videoUrl }) => {
     }
   }, [hasInfiniteDuration]);
 
+  // Handle video play
   useEffect(() => {
     const video = videoRef.current;
     if (videoLoaded && video) {
@@ -147,6 +158,7 @@ const VideoPlayer = ({ videoUrl }) => {
     }
   }, [videoLoaded]);
 
+  // Handle time update
   const handleTimeUpdate = useCallback(() => {
     const video = videoRef.current;
     if (video) {
@@ -165,6 +177,7 @@ const VideoPlayer = ({ videoUrl }) => {
     }
   }, []);
 
+  // Add event listeners
   useEffect(() => {
     const video = videoRef.current;
     if (video) {
@@ -183,6 +196,7 @@ const VideoPlayer = ({ videoUrl }) => {
     }
   }, [handleLoadedMetadata, handleTimeUpdate, hasInfiniteDuration]);
 
+  // Toggle play/pause
   const togglePlayPause = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -198,6 +212,7 @@ const VideoPlayer = ({ videoUrl }) => {
     }
   };
 
+  // Handle seek
   const handleSeek = (e) => {
     const video = videoRef.current;
     if (!video || !isFinite(duration)) return;
@@ -205,6 +220,7 @@ const VideoPlayer = ({ videoUrl }) => {
     video.currentTime = seekTime;
   };
 
+  // Format time
   const formatTime = (time) => {
     if (!isFinite(time)) {
       time = 0;
@@ -214,15 +230,16 @@ const VideoPlayer = ({ videoUrl }) => {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
+  // Handle like
   const handleLike = () => {
     setLiked(!liked);
 
-    const findIndex = videoUrl.likes.findIndex((item) => {
+    const findIndex = currentVideo?.likes?.findIndex((item) => {
       return item.userId === user.id;
     });
 
     if (findIndex === -1) {
-      videoUrl.likes.push({
+      currentVideo.likes.push({
         userId: user.id,
         username: user.name,
       });
@@ -230,8 +247,8 @@ const VideoPlayer = ({ videoUrl }) => {
     const saveData = async () => {
       try {
         const res = await axios.patch(
-          `/api/video-backend/likeHandle/${videoUrl._id}`,
-          { likes: videoUrl.likes }
+          `/api/video-backend/likeHandle/${currentVideo._id}`,
+          { likes: currentVideo.likes }
         );
         setLiked(true);
         console.log(res.data);
@@ -264,7 +281,7 @@ const VideoPlayer = ({ videoUrl }) => {
       </div>
       <video
         ref={videoRef}
-        src={videoUrl.videoUrl}
+        src={currentVideo.videoUrl}
         className={`w-full rounded-lg ${
           isLoading ? "opacity-0" : "opacity-100"
         }`}
@@ -274,6 +291,7 @@ const VideoPlayer = ({ videoUrl }) => {
         preload="metadata"
         autoPlay={hasInfiniteDuration}
         muted={hasInfiniteDuration}
+        onEnded={() => onNext()}
       />
       <div className="flex flex-col gap-4 mt-4">
         <div className="flex items-center gap-4 mt-4">
@@ -330,13 +348,13 @@ const VideoPlayer = ({ videoUrl }) => {
               }`}
               onClick={handleLike}
             >
-              <ThumbsUp className="w-5 h-5 mr-2" /> {videoUrl.likes.length}
+              <ThumbsUp className="w-5 h-5 mr-2" /> {currentVideo?.likes?.length || 0}
             </button>
             <button className="flex items-center px-4 py-2 rounded-md bg-red-500">
               <ThumbsDown className="w-5 h-5 mr-2" />
             </button>
           </div>
-          <span>{videoUrl.views.length} Views</span>
+          <span>{currentVideo?.views?.length || 0} Views</span>
           <button
             className={`flex items-center px-4 py-2 rounded-md transition-all ${
               subscribed ? "bg-red-600 text-white" : "bg-red-500"
@@ -344,12 +362,12 @@ const VideoPlayer = ({ videoUrl }) => {
             onClick={handleSubscribe}
           >
             <Bell className="w-5 h-5 mr-2" />{" "}
-            {subscribed ? "Subscribed" : "Subscribe"} {subscribedUsers?.length}
+            {subscribed ? "Subscribed" : "Subscribe"} {subscribedUsers?.length || 0}
           </button>
         </div>
       </div>
       <div>
-            <CommentsSection videoId={videoUrl._id}></CommentsSection>
+        <CommentsSection videoId={currentVideo._id}></CommentsSection>
       </div>
     </div>
   );

@@ -54,6 +54,7 @@ export default function Navbar() {
         <Link href='/video' className="">
             Publish your Video   
         </Link>
+        <Link href='/playlistForm'>PlayList Create</Link>
         <button>
           <Bell className="w-6 h-6 text-white" />
         </button>

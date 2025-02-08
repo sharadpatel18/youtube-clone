@@ -7,7 +7,6 @@ const CommentsSection = ({ videoId }) => {
   const { user } = useContext(MyContext);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
-    console.log(videoId);
     
   useEffect(() => {
     const fetchComments = async () => {
