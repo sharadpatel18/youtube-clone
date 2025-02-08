@@ -9,7 +9,7 @@ import { Play, Pause, Loader2, ThumbsUp, ThumbsDown, Bell } from "lucide-react";
 import Image from "next/image";
 import { MyContext } from "@/context/MyContext";
 import axios from "axios";
-import { set } from "react-hook-form";
+import CommentsSection from "./commentSection";
 
 const VideoPlayer = ({ videoUrl }) => {
   const videoRef = useRef(null);
@@ -347,6 +347,9 @@ const VideoPlayer = ({ videoUrl }) => {
             {subscribed ? "Subscribed" : "Subscribe"} {subscribedUsers?.length}
           </button>
         </div>
+      </div>
+      <div>
+            <CommentsSection videoId={videoUrl._id}></CommentsSection>
       </div>
     </div>
   );
