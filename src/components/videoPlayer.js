@@ -44,16 +44,13 @@ const VideoPlayer = ({ videoUrl, playlist, currentVideoIndex , onPrevious , onNe
       });
 
       if (res.status === 200) {
-        // Update the frontend state immediately
         setSubscribed(true);
 
-        // Fetch the updated subscriber count from the backend
         const updatedChannel = await axios.get(
           `/api/video-backend/getSubscriber/${currentVideo.userId}`
         );
 
-        if (updatedChannel.data) {
-          // Update the subscribedUsers state with the new subscriber count
+       if (updatedChannel.data) {
           setSubscribedUsers(updatedChannel.data.subscribers);
         }
       }
@@ -62,7 +59,6 @@ const VideoPlayer = ({ videoUrl, playlist, currentVideoIndex , onPrevious , onNe
     }
   };
 
-  // Fetch subscriber data
   useEffect(() => {
     const saveData = async () => {
       try {
@@ -89,7 +85,6 @@ const VideoPlayer = ({ videoUrl, playlist, currentVideoIndex , onPrevious , onNe
     saveData();
   }, [subscribed, currentVideo, user]);
 
-  // Handle views
   useEffect(() => {
     const index = currentVideo?.views?.findIndex((item) => {
       return item.userId === user.id;
@@ -112,7 +107,6 @@ const VideoPlayer = ({ videoUrl, playlist, currentVideoIndex , onPrevious , onNe
     }
   }, [currentVideo, user]);
 
-  // Save views to backend
   useEffect(() => {
     const saveData = async () => {
       try {
@@ -127,7 +121,6 @@ const VideoPlayer = ({ videoUrl, playlist, currentVideoIndex , onPrevious , onNe
     saveData();
   }, [currentVideo]);
 
-  // Handle video metadata
   const handleLoadedMetadata = useCallback(() => {
     const video = videoRef.current;
 
@@ -367,7 +360,7 @@ const VideoPlayer = ({ videoUrl, playlist, currentVideoIndex , onPrevious , onNe
         </div>
       </div>
       <div>
-        <CommentsSection videoId={currentVideo._id}></CommentsSection>
+        <CommentsSection key={currentVideo._id} videoId={currentVideo._id}></CommentsSection>
       </div>
     </div>
   );
