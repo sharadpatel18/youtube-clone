@@ -246,7 +246,7 @@ export default function Home() {
               >
                 <button
                   onClick={closeModal}
-                  className="absolute top-4 right-4 text-white text-4xl font-bold"
+                  className="absolute top-4 right-4 z-50 text-white text-4xl font-bold"
                 >
                   <X />
                 </button>

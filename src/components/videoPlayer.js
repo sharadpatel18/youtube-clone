@@ -253,7 +253,7 @@ const VideoPlayer = ({ videoUrl, playlist, currentVideoIndex , onPrevious , onNe
   };
 
   return (
-    <div className="max-w-xl mx-auto p-4 bg-gray-900 text-white rounded-lg shadow-lg relative">
+    <div className="w-full h-screen mx-auto overflow-scroll p-4 bg-gray-900 text-white rounded-lg shadow-lg relative">
       {hasInfiniteDuration && (
         <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-150">
           <Loader2 className="animate-spin text-blue-500 mx-2" size={40} />
@@ -264,13 +264,13 @@ const VideoPlayer = ({ videoUrl, playlist, currentVideoIndex , onPrevious , onNe
       )}
       <div className="flex items-center gap-3 p-3 border-b border-gray-300">
         <Image
-          src="/profile.jpg"
+          src={currentVideo.profilePicture}
           alt="Profile Photo"
           width={40}
           height={40}
           className="rounded-full"
         />
-        <span className="font-semibold text-lg">Username</span>
+        <span className="font-semibold text-lg">{currentVideo.username}</span>
       </div>
       <video
         ref={videoRef}
@@ -287,7 +287,8 @@ const VideoPlayer = ({ videoUrl, playlist, currentVideoIndex , onPrevious , onNe
         onEnded={() => onNext()}
       />
       <div className="flex flex-col gap-4 mt-4">
-        <div className="flex items-center gap-4 mt-4">
+        <div className="flex flex-col items-center mt-4">
+          <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4 border-t">
           <button
             onClick={() => {
               const video = videoRef.current;
@@ -299,7 +300,7 @@ const VideoPlayer = ({ videoUrl, playlist, currentVideoIndex , onPrevious , onNe
           </button>
           <button
             onClick={togglePlayPause}
-            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 rounded-lg text-white"
+            className="px-4 py-2 flex items-center justify-center bg-blue-500 hover:bg-blue-600 rounded-lg text-white"
           >
             {isPlaying ? <Pause size={24} /> : <Play size={24} />}
           </button>
@@ -316,6 +317,8 @@ const VideoPlayer = ({ videoUrl, playlist, currentVideoIndex , onPrevious , onNe
           >
             +2 sec
           </button>
+          </div>
+          <div className="w-full">
           <span className="text-sm">
             {formatTime(currentTime)} / {formatTime(duration)}
           </span>
@@ -332,8 +335,9 @@ const VideoPlayer = ({ videoUrl, playlist, currentVideoIndex , onPrevious , onNe
               />
             </div>
           )}
+          </div>
         </div>
-        <div className="w-full flex justify-evenly items-center p-4 border-t">
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-4 border-t">
           <div className="flex space-x-4">
             <button
               className={`flex items-center px-4 py-2 rounded-md transition-all ${
@@ -349,7 +353,7 @@ const VideoPlayer = ({ videoUrl, playlist, currentVideoIndex , onPrevious , onNe
           </div>
           <span>{currentVideo?.views?.length || 0} Views</span>
           <button
-            className={`flex items-center px-4 py-2 rounded-md transition-all ${
+            className={`flex justify-center items-center px-4 py-2 rounded-md transition-all ${
               subscribed ? "bg-red-600 text-white" : "bg-red-500"
             }`}
             onClick={handleSubscribe}

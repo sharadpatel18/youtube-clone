@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import Image from "next/image";
 import axios from "axios";
 import { MyContext } from "@/context/MyContext";
+import {User} from 'lucide-react'
 
 const CommentsSection = ({ videoId }) => {
   const { user } = useContext(MyContext);
@@ -43,12 +44,12 @@ const CommentsSection = ({ videoId }) => {
   };
 
   return (
-    <div className="mt-6 bg-gray-900 p-4 rounded-lg">
+    <div className=" mt-6 bg-gray-900 p-4 rounded-lg">
       <h2 className="text-xl font-semibold mb-4">Comments</h2>
 
       {/* Comment Input Box */}
-      <div className="flex items-center space-x-3 mb-4">
-        <Image src="/profile.jpg" alt="User" width={40} height={40} className="rounded-full" />
+      <div className=" w-full flex justify-center items-center space-x-3 mb-4">
+        <Image src={user?.profilePicture} alt="User" width={40} height={40} className="rounded-full" />
         <input
           type="text"
           value={newComment}
@@ -68,7 +69,7 @@ const CommentsSection = ({ videoId }) => {
       {comments.length > 0 ? (
         comments.map((comment, index) => (
           <div key={index} className="flex items-start space-x-3 p-3 border-b border-gray-700">
-            <Image src="/profile.jpg" alt="User" width={40} height={40} className="rounded-full" />
+            <User className="w-6 h-6 text-white" />
             <div>
               <p className="font-semibold text-white">{comment?.username}</p>
               <p className="text-gray-400">{comment?.comment}</p>
