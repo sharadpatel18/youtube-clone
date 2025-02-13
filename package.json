@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fix-webm-duration/fix": "^1.0.1",
+    "@videojs/http-streaming": "^3.17.0",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
@@ -19,7 +21,8 @@
     "next": "15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-hook-form": "^7.54.2"
+    "react-hook-form": "^7.54.2",
+    "video.js": "^8.21.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

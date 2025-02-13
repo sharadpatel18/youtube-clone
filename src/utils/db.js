@@ -13,7 +13,7 @@ export async function DbConntection() {
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 40000,
     });
-
+    
     console.log("Database connected successfully");
   } catch (error) {
     console.error("Error connecting to database:", error.message);

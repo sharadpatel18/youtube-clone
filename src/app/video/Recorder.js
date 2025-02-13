@@ -5,6 +5,7 @@ import Axios from "axios";
 import React, { useState, useRef, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Upload } from 'lucide-react';
+import { fixWebmDuration } from "@fix-webm-duration/fix";
 
 const Recorder = () => {
   const router = useRouter();
@@ -47,7 +48,7 @@ const Recorder = () => {
 
       const combinedStream = new MediaStream([...videoStream.getTracks(), ...screenStream.getTracks()]);
 
-      mediaRecorderRef.current = new MediaRecorder(combinedStream, { mimeType: "video/webm" });
+      mediaRecorderRef.current = new MediaRecorder(combinedStream, { mimeType: "video/mp4" });
 
       const chunks = [];
       mediaRecorderRef.current.ondataavailable = (event) => {
@@ -55,7 +56,7 @@ const Recorder = () => {
       };
 
       mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(chunks, { type: "video/webm" });
+        const blob = new Blob(chunks, { type: "video/mp4" });
         setRecordedBlob(blob);
         videoBlobRef.current = URL.createObjectURL(blob);
         setIsRecording(false);
@@ -85,17 +86,19 @@ const Recorder = () => {
 
       const combinedStream = new MediaStream([...screenStream.getTracks(), ...audioStream.getTracks()]);
 
-      mediaRecorderRef.current = new MediaRecorder(combinedStream, { mimeType: "video/webm" });
+      mediaRecorderRef.current = new MediaRecorder(combinedStream, { mimeType: "video/mp4" });
 
       const chunks = [];
       mediaRecorderRef.current.ondataavailable = (event) => {
         chunks.push(event.data);
       };
 
-      mediaRecorderRef.current.onstop = () => {
-        const blob = new Blob(chunks, { type: "video/webm" });
-        setRecordedBlob(blob);
-        videoBlobRef.current = URL.createObjectURL(blob);
+      mediaRecorderRef.current.onstop =  async() => {
+        const duration = videoElementRef.current.duration;
+        const blob = new Blob(chunks, { type: "video/mp4" });
+        const newBlob = await fixWebmDuration(blob, duration);
+        setRecordedBlob(newBlob);
+        videoBlobRef.current = URL.createObjectURL(newBlob);
         setIsScreenRecording(false);
         videoElementRef.current.srcObject = null;
         combinedStream.getTracks().forEach(track => track.stop());
@@ -130,7 +133,7 @@ const Recorder = () => {
       const url = URL.createObjectURL(recordedBlob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "recording.webm";
+      link.download = "recording.mp4";
       link.click();
       URL.revokeObjectURL(url);
     }

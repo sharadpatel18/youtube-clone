@@ -19,3 +19,12 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.video-js .vjs-play-progress {
+  background-color: red !important; /* Played part */
+}
+
+.video-js .vjs-load-progress {
+  background-color: rgb(0, 0, 0) !important; /* Buffered part */
+  opacity: 1 !important;
+}

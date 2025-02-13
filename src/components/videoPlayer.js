@@ -28,10 +28,38 @@ const VideoPlayer = ({ videoUrl, playlist, currentVideoIndex , onPrevious , onNe
   const [liked, setLiked] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const [subscribedUsers, setSubscribedUsers] = useState([]);
+  const [buffered, setBuffered] = useState(0);
 
   // Current video being played (either from videoUrl or playlist)
   const currentVideo = playlist ? playlist[currentVideoIndex] : videoUrl;
 
+  useEffect(() => {
+    const video = videoRef.current;
+
+    if (video) {
+      // Update buffered progress
+      const updateBuffered = () => {
+        if (video.buffered.length > 0) {
+          const bufferedEnd = video.buffered.end(video.buffered.length - 1);
+          const bufferedPercent = (bufferedEnd / video.duration) * 100;
+          setBuffered(bufferedPercent);
+        }
+      };
+
+      // Update playback progress
+      const updateProgress = () => {
+        setProgress((video.currentTime / video.duration) * 100);
+      };
+
+      video.addEventListener("progress", updateBuffered);
+      video.addEventListener("timeupdate", updateProgress);
+
+      return () => {
+        video.removeEventListener("progress", updateBuffered);
+        video.removeEventListener("timeupdate", updateProgress);
+      };
+    }
+  }, []);
   // Handle subscribe
   const handleSubscribe = async () => {
     console.log(user);
@@ -323,17 +351,16 @@ const VideoPlayer = ({ videoUrl, playlist, currentVideoIndex , onPrevious , onNe
             {formatTime(currentTime)} / {formatTime(duration)}
           </span>
           {!hasInfiniteDuration && (
+            <div className="relative h-2 bg-gray-800 mt-2 rounded overflow-hidden">
             <div
-              className={`flex-1 h-2 bg-gray-500 rounded-lg cursor-pointer relative ${
-                hasInfiniteDuration ? "opacity-50 cursor-default" : ""
-              }`}
-              onClick={hasInfiniteDuration ? null : handleSeek}
-            >
-              <div
-                className="h-2 bg-blue-500 rounded-lg"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
+              className="absolute top-0 left-0 h-full bg-gray-400"
+              style={{ width: `${buffered}%` }}
+            ></div>
+            <div
+              className="absolute top-0 left-0 h-full bg-red-500"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
           )}
           </div>
         </div>

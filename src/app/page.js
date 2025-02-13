@@ -7,6 +7,8 @@ import VideoPlayer from "@/components/videoPlayer";
 import { motion, AnimatePresence } from "framer-motion";
 import { PlayCircle, X } from "lucide-react";
 import Image from "next/image";
+import VideoJS from '@/components/videoJS'
+import videojs from 'video.js';
 
 export default function Home() {
   const { user } = useContext(MyContext);
@@ -55,6 +57,7 @@ export default function Home() {
     setSelectedPlaylist(null); // Reset any playlist selection
     setSelectedVideo(video);
     setIsModalOpen(true);
+
   };
 
   const openPlaylist = (playlist) => {
@@ -84,6 +87,35 @@ export default function Home() {
       setCurrentVideoIndex(prevIndex);
       setSelectedVideo(selectedPlaylist[prevIndex]);
     }
+  };
+
+  const playerRef = useRef(null);
+
+  const videoJsOptions = {
+    autoplay: true,
+    controls: true,
+    responsive: true,
+    fluid: true,
+    preload: "auto", // Preloads the video to enable buffering
+    playbackRates: [0.5, 1, 1.5, 2], // Speed options
+    sources: [{
+      src: selectedVideo?.videoUrl || "/path-to-play.mp4",
+      type: 'video/mp4'
+    }]
+  };
+
+
+  const handlePlayerReady = (player) => {
+    playerRef.current = player;
+
+    // You can handle player events here, for example:
+    player.on('waiting', () => {
+      videojs.log('player is waiting');
+    });
+
+    player.on('dispose', () => {
+      videojs.log('player will dispose');
+    });
   };
 
   if (user) {
@@ -257,6 +289,7 @@ export default function Home() {
                   onNext={handleNextVideo}
                   onPrevious={handlePreviousVideo}
                 />
+                  {/* <VideoJS options={videoJsOptions} onReady={handlePlayerReady} /> */}
               </motion.div>
             </motion.div>
           )}
