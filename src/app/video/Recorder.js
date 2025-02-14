@@ -44,11 +44,10 @@ const Recorder = () => {
   const startRecording = async () => {
     try {
       const videoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+   
+      const combinedStream = new MediaStream([...videoStream.getTracks()]);
 
-      const combinedStream = new MediaStream([...videoStream.getTracks(), ...screenStream.getTracks()]);
-
-      mediaRecorderRef.current = new MediaRecorder(combinedStream, { mimeType: "video/mp4" });
+      mediaRecorderRef.current = new MediaRecorder(combinedStream, { mimeType: "video/webm" });
 
       const chunks = [];
       mediaRecorderRef.current.ondataavailable = (event) => {
@@ -86,7 +85,7 @@ const Recorder = () => {
 
       const combinedStream = new MediaStream([...screenStream.getTracks(), ...audioStream.getTracks()]);
 
-      mediaRecorderRef.current = new MediaRecorder(combinedStream, { mimeType: "video/mp4" });
+      mediaRecorderRef.current = new MediaRecorder(combinedStream, { mimeType: "video/webm" });
 
       const chunks = [];
       mediaRecorderRef.current.ondataavailable = (event) => {
